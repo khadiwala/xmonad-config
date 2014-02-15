@@ -1,15 +1,18 @@
 import XMonad
 import XMonad.Util.EZConfig
+import XMonad.Util.Run
+import XMonad.Util.WorkspaceCompare
+import XMonad.Util.Scratchpad
 import XMonad.Layout
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
-import XMonad.Util.Run
 import XMonad.Layout.IM
 import XMonad.Layout.Grid
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Groups.Wmii
 import XMonad.Layout.Groups.Helpers
+import XMonad.Layout.Spacing
 import XMonad.Hooks.SetWMName
 import XMonad.Prompt
 import XMonad.Prompt.Window
@@ -21,6 +24,7 @@ myManageHook::ManageHook
 myManageHook = composeAll
     [ appName =? "xfrun4"        -->doIgnore
     , appName =? "Xfce4-notifyd" -->doIgnore
+    , scratchpadManageHookDefault
     , manageDocks
     ]
 
@@ -40,8 +44,8 @@ myKeys = [ ("M-p", spawn "dmenu_run")
          , ("M-; M-l", zoomGroupIn)
          , ("M-; M-k", focusGroupUp)
          , ("M-; M-j", focusGroupDown)
-         , ("M-; M-S-k", moveToGroupUp True)
-         , ("M-; M-S-j", moveToGroupDown True)
+         , ("M-; M-S-k", moveToGroupUp False)
+         , ("M-; M-S-j", moveToGroupDown False)
          , ("M-j", focusDown)
          , ("M-k", focusUp)
          , ("M-S-j", swapDown)
@@ -50,14 +54,15 @@ myKeys = [ ("M-p", spawn "dmenu_run")
          , ("M-b", windowPromptBring defaultXPConfig)
          , ("M-m", manPrompt defaultXPConfig)
          , ("M-x", runOrRaisePrompt defaultXPConfig)
+         , ("M-o", scratchpadSpawnActionTerminal "sakura")
          ]
 
-myWorkspaces = ["1:ecl","2","3:chat","4:email","5","6","7","8,","9"]
+myWorkspaces = ["1","2","3:chat","4","5","6","7","8,","9"]
 
-myLayoutHook = onWorkspace "1:ecl" wmiiFull$ 
+myLayoutHook = onWorkspace "1" wmiiFull$ 
                onWorkspace "2" wmiiFull$
                onWorkspace "3:chat" imLayout$ 
-               onWorkspace "4:email" wmiiFull$ 
+               onWorkspace "4" wmiiFull$ 
                stdLayout
     where
         stdLayout = avoidStruts $ layoutHook defaultConfig
@@ -75,6 +80,7 @@ main = do
         , logHook = dynamicLogWithPP xmobarPP
             { ppOutput = hPutStrLn xmproc
             , ppTitle = xmobarColor "green" "" . shorten 50
+            , ppSort = getSortByXineramaRule
             }
         , modMask    = mod4Mask
         , terminal   = "sakura" 
