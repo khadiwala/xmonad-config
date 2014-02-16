@@ -86,4 +86,6 @@ main = do
         , terminal   = "sakura" 
         , workspaces = myWorkspaces
         , startupHook = setWMName "LG3D"
+        , focusedBorderColor = "#4422FF"
+        , borderWidth = 2
         } `additionalKeysP` myKeys
